@@ -1,16 +1,17 @@
 rm(list = ls())
 library(quantmod)
-STK = get(getSymbols("AAPL"))
+STK = get(getSymbols("2330.TW"))
 # STK = as.matrix(na.omit(STK))
-STK = as.matrix(na.omit(STK)["1980-12-12::2022-12-30"])
+STK = as.matrix(na.omit(STK)["2012-01-01::2022-12-30"])
 fee <- 0.006
 m = 1  # start K
-
+c<-0
 
 ######## buy open sell close
 PL = setNames(numeric(nrow(STK)), rownames(STK))
 while (m < nrow(STK)) {
   long = as.numeric(Op(STK)[m])
+  c<-c+1
   PL[m] = (as.numeric(Cl(STK)[m]) - long) * (1 - fee)
   m = m + 1
 }
