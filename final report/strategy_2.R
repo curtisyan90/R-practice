@@ -1,8 +1,8 @@
 rm(list = ls())
 library(quantmod)
-STK = get(getSymbols("GOOG"))
+STK = get(getSymbols("2330.TW"))
 # STK = as.matrix(na.omit(STK))
-STK = as.matrix(na.omit(STK)["2000-01-01::2022-12-30"])
+STK = as.matrix(na.omit(STK)["2012-01-01::2022-12-30"])
 #Draw MA on K chart
 ma1_len = 50
 ma2_len = 100

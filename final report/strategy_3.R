@@ -6,14 +6,17 @@ STK = as.matrix(na.omit(STK)["2012-01-01::2022-12-30"])
 #Draw MA on K chart
 ma1_len = 50
 ma2_len = 100
+ma3_len = 150
 chartSeries(STK)
 par(new = T)
 addSMA(ma1_len)
 addSMA(ma2_len)
+addSMA(ma3_len)
 ##################Strategy
 colnames(STK) <- c("Open", "High", "Low", "Close", "Volume", "Adjusted")
 ma1 <- SMA(Cl(STK), ma1_len)
 ma2 <- SMA(Cl(STK), ma2_len)
+ma3 <- SMA(Cl(STK), ma3_len)
 ATR<-ATR(STK[,c("High","Low","Close")], 14)
 atr <- ATR[,2]
 tr <- ATR[,1]
@@ -22,31 +25,25 @@ longStop <- (1-0.03)
 longDone <- (1+0.03)
 
 m = 101  # start K
-c<-0
+c <- 0
 PL = setNames(numeric(nrow(STK)), rownames(STK))
 while (m < nrow(STK)) {
-  if (# close crossover ma1 & ma1>ma2
-      (Cl(STK)[m - 1] <= ma1[m - 1] &&  
-       Cl(STK)[m] > ma1[m] && ma1[m] > ma2[m]) ||
-      # close crossover ma1 & ma2
-      (Cl(STK)[m - 1] <= ma1[m - 1] && Cl(STK)[m] > ma1[m] &&
-       Cl(STK)[m - 1] <= ma2[m - 1] && Cl(STK)[m] > ma2[m]) && 
-      # ma2 growth
-      ma2[m]>ma2[m-1]) {
+  if (# tr<atr
+    (tr[m]<atr[m] && tr[m-1]<atr[m-1] && tr[m-2]<atr[m-2]) &&
+    # ((Cl(STK)[m]>Op(STK)[m] && Cl(STK)[m-1]>Op(STK)[m-1]) || 
+    #  (Cl(STK)[m]>Op(STK)[m] && Cl(STK)[m-2]>Op(STK)[m-2]) ||
+    #  (Cl(STK)[m-1]>Op(STK)[m-1] && Cl(STK)[m-2]>Op(STK)[m-2])) &&
+    (ma2[m]>ma2[m-1])
+    ) {
     long = as.numeric(Cl(STK)[m])
+    highest <- Hi(STK)[m]
+    stoppiont <- min(Lo(STK)[m], Lo(STK)[m-1], Lo(STK)[m-2])*longStop
     c <- c+1
-    while (
-            # 兩種寫法
-      
-            ((Cl(STK)[m] < ma1[m] && tr[m] > atr[m])||
-            (Cl(STK)[m - 1] < ma1[m-1] && Cl(STK)[m] < Cl(STK)[m - 1])||
-            (Cl(STK)[m] < long * longStop)) == FALSE &&
-      
-            # (Cl(STK)[m] >= ma1[m] || tr[m] <= atr[m]) &&
-            # (Cl(STK)[m - 1] >= ma1[m-1] || Cl(STK)[m] >= Cl(STK)[m - 1]) &&
-            # (Cl(STK)[m] >= long * longStop)&&
-              
+    while ((Cl(STK)[m]<highest*longStop || Cl(STK)[m]<stoppiont) == FALSE && 
            m < nrow(STK)-2) {
+      if (Hi(STK)[m] > highest){
+        highest <- Hi(STK)[m]
+      }
       m = m + 1
     }
     PL[m] = (as.numeric(Cl(STK)[m]) - long)*(1-fee)
