@@ -14,19 +14,13 @@ addSMA(ma2_len)
 colnames(STK) <- c("Open", "High", "Low", "Close", "Volume", "Adjusted")
 ma1 <- SMA(Cl(STK), ma1_len)
 ma2 <- SMA(Cl(STK), ma2_len)
-ATR <- ATR(STK[, c("High", "Low", "Close")], 14)
-atr <- ATR[, 2]
-tr <- ATR[, 1]
 fee <- 0.006
 longStop <- (1 - 0.03)
 longDone <- (1 + 0.03)
-pos_per <- 0.05
 
 m <- 101 # start K
 c <- 0
 PL <- setNames(numeric(nrow(STK)), rownames(STK)) # position long
-A <- setNames(numeric(nrow(STK)), rownames(STK)) # asset
-A[1:m] <- 1
 # OHLC
 op <- Op(STK)
 hi <- Hi(STK)
@@ -42,28 +36,24 @@ while (m < nrow(STK)) {
                     # ma2 growth
                     ma2[m] > ma2[m - 1]) {
           long <- as.numeric(Cl(STK)[m]) # buy price
-          # share <- (as.numeric(A[m - 1]) * pos_per) / long # share amount
-          # A[m] <- as.numeric(A[m - 1]) * (1 - pos_per) # asset after buy
           c <- c + 1
-          while (
-
-               # 兩種寫法
-               ( # (Cl(STK)[m] < ma1[m] && tr[m] > atr[m])||
-                    # 
-                    # (cl[m - 1] < ma1[m - 1] && cl[m] < cl[m - 1]) ||
-                         (cl[m] < long * longStop)) == FALSE &&
-                    # (Cl(STK)[m] >= ma1[m] || tr[m] <= atr[m]) &&
-                    # (Cl(STK)[m - 1] >= ma1[m-1] || Cl(STK)[m] >= Cl(STK)[m - 1]) && # nolint
-                    # (Cl(STK)[m] >= long * longStop)&&
+          while (# 兩種寫法 same logic
+                ## close < ma1
+               (Cl(STK)[m] < ma1[m] ||
+                 ## ma1 < ma2
+                ma1[m] < ma2[m] ||
+                ## close < stop
+                cl[m] < long * longStop) == FALSE &&
+               
+                # (Cl(STK)[m] >= ma1[m] || tr[m] <= atr[m]) &&
+                # (Cl(STK)[m - 1] >= ma1[m-1] || Cl(STK)[m] >= Cl(STK)[m - 1]) && # nolint
+                # (Cl(STK)[m] >= long * longStop)&&
 
                     m < nrow(STK) - 1) {
-               # A[m] <- as.numeric(A[m - 1])
                m <- m + 1
           }
-          PL[m] <- (as.numeric(Cl(STK)[m]) - long)
-          # A[m] <- as.numeric(A[m - 1]) + (as.numeriÇc(Cl(STK)[m]) - long) * share * (1 - fee)
+          PL[m] <- (as.numeric(Cl(STK)[m]) - long) * (1 - fee)
      }
-     # A[m] <- as.numeric(A[m - 1])
      m <- m + 1
 }
 
@@ -78,22 +68,11 @@ DDper <- DD / cummax(cumsum(PL))
 # which(DDper==min(DDper))
 tail(sort(diff(which(DD == 0))), 5)
 income <- sum(PL) # 總報酬
-asset <- A
 ################################################################################
-yRange <- range(cumsum(PL), DD, A)
+yRange <- range(cumsum(PL), DD)
 plot(cumsum(PL),
      type = "l", col = "red", lwd = 2, ylim = yRange,
      ylab = "PL", xlab = "Date", xaxt = "n"
-)
-par(new = TRUE)
-plot(A,
-     type = "l", col = "yellow", lwd = 2, ylim = yRange,
-     ylab = "", xlab = "", xaxt = "n"
-)
-par(new = TRUE)
-plot(DD,
-     type = "h", col = "blue", lwd = 2, ylim = yRange,
-     ylab = "", xlab = "", xaxt = "n"
 )
 par(new = TRUE)
 plot(DD,
