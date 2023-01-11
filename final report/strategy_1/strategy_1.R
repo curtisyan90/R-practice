@@ -68,16 +68,25 @@ income <- sum(PL) # 總報酬
 ################################################################################
 yRange <- range(cumsum(PL), DD)
 plot(cumsum(PL),
-     type = "l", col = "red", lwd = 2, ylim = yRange,
+     type = "l", col = "red", lwd = 2, ylim = yRange, las = 1,
      ylab = "PL", xlab = "Date", xaxt = "n"
 )
 par(new = TRUE)
 plot(DD,
-     type = "h", col = "blue", lwd = 2, ylim = yRange,
+     type = "h", col = "blue", lwd = 2, ylim = yRange, axes = FALSE,
      ylab = "", xlab = "", xaxt = "n"
 )
 
 points(which(DD == 0), cumsum(PL)[which(DD == 0)], pch = 10, col = "red")
 
-axis(1, 1:length(PL), as.Date("2012-01-01") + 1 * (1:length(PL)))
-# axis(1, 1:(length(PL)/30),format(as.Date("1980-12", "%Y-%m")+1*(1:length(PL)/30), format = "%Y-%m"), "%Y-%m")
+
+## Add Legend
+legend("topleft",
+       legend = c("PL"),
+       text.col = c("red"), lwd = 3, col = c("red"), seg.len = 0.5,
+       cex = 0.75
+)
+
+# axis(1,1:length(PL),as.Date("2012-01-01")+0.005*(0:(length(PL)-1)))
+
+# axis(1, 1:length(profit), as.Date("2010-01-01")+7*(1:length(profit)))
