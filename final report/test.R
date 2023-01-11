@@ -46,7 +46,7 @@ while (m < nrow(STK)) {
       m <- m + 1
     }
     PL[m] <- (as.numeric(cl[m]) - long) * share * (1 - fee)
-    A[m -1] <- as.numeric(A[m - 2]) + (as.numeric(cl[m]) - long) * share * (1 - fee)
+    A[m - 1] <- as.numeric(A[m - 2]) + (as.numeric(cl[m]) - long) * share * (1 - fee)
   }
   A[m] <- as.numeric(A[m - 1])
   m <- m + 1

@@ -16,8 +16,8 @@ ma1 <- SMA(Cl(STK), ma1_len)
 ma2 <- SMA(Cl(STK), ma2_len)
 fee <- 0.0000229
 longStop <- (1 - 0.03) # stop when close < stop
-std_filter <- 5 # when std < filter
-d <- 3 # std previous days
+std_filter <- 1.5 # when std < filter
+d <- 4 # std previous days
 
 m <- 101 # start K
 c <- 0
@@ -30,10 +30,10 @@ cl <- Cl(STK)
 
 while (m < nrow(STK)) {
      if ( # close crossover ma1 & ma1>ma2
-          (cl[m - 1] <= ma1[m - 1] && cl[m] > ma1[m] && ma1[m] > ma2[m]) ||
+          ((cl[m - 1] <= ma1[m - 1] && cl[m] > ma1[m] && ma1[m] > ma2[m]) ||
                # close crossover ma1 & ma2
                (cl[m - 1] <= ma1[m - 1] && cl[m] > ma1[m] &&
-                    cl[m - 1] <= ma2[m - 1] && cl[m] > ma2[m]) &&
+                    cl[m - 1] <= ma2[m - 1] && cl[m] > ma2[m]) )&&
                     # ma2 growth
                     ma2[m] > ma2[m - 1] &&
                     # filter

@@ -28,10 +28,10 @@ cl <- Cl(STK)
 
 while (m < nrow(STK)) {
      if ( # close crossover ma1 & ma1>ma2
-          (cl[m - 1] <= ma1[m - 1] && cl[m] > ma1[m] && ma1[m] > ma2[m]) ||
+          ((cl[m - 1] <= ma1[m - 1] && cl[m] > ma1[m] && ma1[m] > ma2[m]) ||
                # close crossover ma1 & ma2
                (cl[m - 1] <= ma1[m - 1] && cl[m] > ma1[m] &&
-                    cl[m - 1] <= ma2[m - 1] && cl[m] > ma2[m]) &&
+                    cl[m - 1] <= ma2[m - 1] && cl[m] > ma2[m])) &&
                     # ma2 growth
                     ma2[m] > ma2[m - 1]) {
           long <- as.numeric(Cl(STK)[m]) # buy price
