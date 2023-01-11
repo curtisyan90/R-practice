@@ -15,9 +15,9 @@ colnames(STK) <- c("Open", "High", "Low", "Close", "Volume", "Adjusted")
 ma1 <- SMA(Cl(STK), ma1_len)
 ma2 <- SMA(Cl(STK), ma2_len)
 fee <- 0.0000229
-longStop <- (1 - 0.03) # stop when close < stop
-std_filter <- 1.5 # when std < filter
-d <- 4 # std previous days
+longStop <- (1 - 0.02) # stop when close < stop
+std_filter <- 3 # when std < filter
+d <- 5 # std previous days
 
 m <- 101 # start K
 c <- 0
@@ -33,11 +33,11 @@ while (m < nrow(STK)) {
           ((cl[m - 1] <= ma1[m - 1] && cl[m] > ma1[m] && ma1[m] > ma2[m]) ||
                # close crossover ma1 & ma2
                (cl[m - 1] <= ma1[m - 1] && cl[m] > ma1[m] &&
-                    cl[m - 1] <= ma2[m - 1] && cl[m] > ma2[m]) )&&
-                    # ma2 growth
-                    ma2[m] > ma2[m - 1] &&
-                    # filter
-                    sd(cl[(m - d):(m - 1)]) < std_filter
+                    cl[m - 1] <= ma2[m - 1] && cl[m] > ma2[m])) &&
+               # ma2 growth
+               ma2[m] > ma2[m - 1] &&
+               # filter
+               sd(cl[(m - d):(m - 1)]) < std_filter
      ) {
           long <- as.numeric(Cl(STK)[m]) # buy price
           c <- c + 1
